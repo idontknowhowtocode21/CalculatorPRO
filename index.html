@@ -115,5 +115,119 @@
         setTimeout(() => resultEl.scrollLeft = resultEl.scrollWidth, 0);
     }
 </script>
+
+    <script>
+    // --- 1. THE ROUTER (Decides which mode handles the button) ---
+    function handleButton(btn) {
+        // PRIORITY A: If in ACAAN mode, 'C' is the stage manager
+        if (isTappingMode && tappingType === 'acaan' && btn === 'C') {
+            runAcaanStageManager(); // This function is inside acaan.js
+            return;
+        }
+
+        // PRIORITY B: If we are in the middle of Tapping (Toxic), block other buttons
+        if (isTappingMode) return;
+
+        // PRIORITY C: If Card Mode is active, intercept digits/operators for the card
+        if (cardMode && !['toggle', '='].includes(btn)) {
+            captureCardData(btn); // This function is inside acaan.js
+            return;
+        }
+
+        // PRIORITY D: Normal Calculator Behavior
+        switch(btn) {
+            case 'C': 
+                clearAll(); 
+                break;
+            case '%': 
+                handlePercentLogic(); // Inside toxic.js
+                break;
+            case 'back': 
+                currentInput = currentInput.slice(0, -1); 
+                break;
+            case '=': 
+                runCalculation(); 
+                break;
+            case 'toggle': 
+                toggleSign(); 
+                break;
+            case '.': 
+                appendChar('.'); 
+                break;
+            default: 
+                appendChar(btn);
+        }
+        updateUI();
+    }
+
+    // --- 2. CORE CALCULATOR FUNCTIONS ---
+    function appendChar(char) {
+        const ops = ['+', '-', '×', '÷', '%'];
+        const last = currentInput.slice(-1);
+        
+        if (currentInput === "" && ['×', '÷', '%'].includes(char)) return;
+        
+        if (ops.includes(last) && ops.includes(char)) {
+            currentInput = currentInput.slice(0, -1) + char;
+        } else {
+            if (currentInput === "0" && !ops.includes(char)) {
+                currentInput = char;
+            } else {
+                currentInput += char;
+            }
+        }
+    }
+
+    function runCalculation() {
+        try {
+            let math = currentInput.replace(/×/g, '*').replace(/÷/g, '/');
+            currentInput = eval(math).toString();
+            
+            // Safety: If they hit equals, ensure all secret modes turn off
+            if (tappingType === 'toxic') {
+                isTappingMode = false;
+                tappingType = null;
+                document.getElementById('tap-cue').style.display = "none";
+            }
+            if (cardMode) killCardMode(); // Inside acaan.js
+            
+        } catch (e) {
+            currentInput = "Error";
+        }
+        updateUI();
+    }
+
+    function toggleSign() {
+        if (!currentInput) return;
+        currentInput = currentInput.startsWith('-') ? currentInput.slice(1) : '-' + currentInput;
+    }
+
+    function clearAll() {
+        currentInput = "";
+        // If they hit C, we reset the tapping engine just in case
+        isTappingMode = false;
+        tappingType = null;
+        document.getElementById('tap-cue').style.display = "none";
+        updateUI();
+    }
+
+    function updateUI() {
+        const resultEl = document.getElementById('result');
+        resultEl.innerText = currentInput || "0";
+        
+        // Font Scaling Logic
+        let len = resultEl.innerText.length;
+        if (len > 15) resultEl.style.fontSize = "2.2rem";
+        else if (len > 11) resultEl.style.fontSize = "3rem";
+        else if (len > 7) resultEl.style.fontSize = "4rem";
+        else resultEl.style.fontSize = "5rem";
+
+        // Auto-scroll to the right for long equations
+        setTimeout(() => {
+            resultEl.scrollLeft = resultEl.scrollWidth;
+        }, 0);
+    }
+</script>
+
 </body>
 </html>
