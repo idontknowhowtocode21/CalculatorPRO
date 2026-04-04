@@ -6,7 +6,7 @@ let seqIdx = 0;
 document.addEventListener('DOMContentLoaded', () => { 
     currentInput = "0"; 
     updateUI(); 
-});
+}); //
 
 const keypad = document.getElementById('keypad'); 
 const dotBtn = document.getElementById('btn-dot');
@@ -23,17 +23,19 @@ toggleBtn.addEventListener('touchstart', (e) => {
 
 [dotBtn, toggleBtn].forEach(b => b.addEventListener('touchend', () => clearTimeout(pressTimer)));
 
-keypad.addEventListener('touchstart', (e) => {
+keypad.addEventListener('touchstart', (e) => { //
     if (!isTappingMode) return;
     e.preventDefault(); e.stopPropagation();
     
     if (seqIdx < forceSequence.length) {
         let nextDigit = forceSequence[seqIdx++];
         
-        // SEQUENTIAL DISPLAY FIX: 
-        // If it's the first digit, replace "0". If second, append it.
-        if (currentInput === "0" || currentInput === "") currentInput = nextDigit;
-        else currentInput += nextDigit;
+        // Fix for leading zeros: Treat as string append
+        if (currentInput === "0" || currentInput === "") {
+            currentInput = nextDigit.toString();
+        } else {
+            currentInput += nextDigit.toString();
+        }
         
         updateUI();
         updateIndicator(forceSequence.length - seqIdx);
