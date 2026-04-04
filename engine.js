@@ -22,7 +22,6 @@ toggleBtn.addEventListener('touchstart', (e) => {
 
 [dotBtn, toggleBtn].forEach(b => b.addEventListener('touchend', () => clearTimeout(pressTimer)));
 
-// UPDATED TAPPING ENGINE: APPENDS TO SCREEN
 keypad.addEventListener('touchstart', (e) => {
     if (!isTappingMode) return;
     e.preventDefault(); e.stopPropagation();
@@ -30,17 +29,26 @@ keypad.addEventListener('touchstart', (e) => {
     if (seqIdx < forceSequence.length) {
         let nextChar = forceSequence[seqIdx++].toString();
         
-        // FIX: Instead of replacing, we append the force digit to the existing math string
-        // This keeps "15 + 15 +" on screen and just adds the next digit
-        currentInput = currentInput.toString() + nextChar;
+        if (tappingType === 'acaan') {
+            // CARD MODE: REPLACE LOGIC
+            // If it's the first tap, replace the whole screen with the first digit (e.g., "0")
+            if (seqIdx === 1) {
+                currentInput = nextChar;
+            } else {
+                // If it's the second tap, add it next to the first (e.g., "0" becomes "08")
+                currentInput = currentInput.toString() + nextChar;
+            }
+        } else {
+            // TOXIC MODE: APPEND LOGIC
+            // Always add the digit to the end of the existing math (e.g., "15 + 7")
+            currentInput = currentInput.toString() + nextChar;
+        }
         
         updateUI();
         updateIndicator(forceSequence.length - seqIdx);
 
         if (seqIdx === forceSequence.length) {
-            // Once finished, we stop the "Tapping Mode" so the Equals button works normally
-            isTappingMode = false;
-            // Note: We don't call exitSecretMode yet so ACAAN data stays locked if needed
+            isTappingMode = false; // Allow Equals button to work now
         }
     }
 }, { passive: false });
