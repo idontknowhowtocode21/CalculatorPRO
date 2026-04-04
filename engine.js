@@ -12,6 +12,7 @@ const dotBtn = document.getElementById('btn-dot');
 const toggleBtn = document.getElementById('btn-toggle');
 let pressTimer;
 
+// Activation Triggers
 dotBtn.addEventListener('touchstart', (e) => {
     pressTimer = setTimeout(() => { calculateToxicGap(); }, 1000);
 });
@@ -22,41 +23,51 @@ toggleBtn.addEventListener('touchstart', (e) => {
 
 [dotBtn, toggleBtn].forEach(b => b.addEventListener('touchend', () => clearTimeout(pressTimer)));
 
+// The Tapping Engine
 keypad.addEventListener('touchstart', (e) => {
     if (!isTappingMode) return;
-    e.preventDefault(); e.stopPropagation();
+    e.preventDefault(); 
+    e.stopPropagation();
     
     if (seqIdx < forceSequence.length) {
         let nextChar = forceSequence[seqIdx++].toString();
         
         if (tappingType === 'acaan') {
             // CARD MODE: REPLACE LOGIC
-            // If it's the first tap, replace the whole screen with the first digit (e.g., "0")
             if (seqIdx === 1) {
                 currentInput = nextChar;
             } else {
-                // If it's the second tap, add it next to the first (e.g., "0" becomes "08")
                 currentInput = currentInput.toString() + nextChar;
             }
         } else {
             // TOXIC MODE: APPEND LOGIC
-            // Always add the digit to the end of the existing math (e.g., "15 + 7")
             currentInput = currentInput.toString() + nextChar;
         }
         
         updateUI();
-        updateIndicator(forceSequence.length - seqIdx);
 
-        if (seqIdx === forceSequence.length) {
-            isTappingMode = false; // Allow Equals button to work now
+        // Calculate remaining taps
+        let remaining = forceSequence.length - seqIdx;
+        
+        if (remaining > 0) {
+            updateIndicator(remaining);
+        } else {
+            // FEEDBACK FIX: Make the number vanish on the final tap
+            updateIndicator(""); 
+            isTappingMode = false; 
         }
     }
 }, { passive: false });
 
 function updateIndicator(text) {
     const cue = document.getElementById('tap-cue');
-    cue.innerText = text;
-    cue.style.display = 'block';
+    if (text === "" || text === null) {
+        cue.innerText = "";
+        cue.style.display = 'none';
+    } else {
+        cue.innerText = text;
+        cue.style.display = 'block';
+    }
 }
 
 function exitSecretMode() {
@@ -65,5 +76,5 @@ function exitSecretMode() {
     seqIdx = 0;
     forceSequence = "";
     if (typeof killCardMode === 'function') killCardMode(); 
-    document.getElementById('tap-cue').style.display = 'none';
+    updateIndicator(""); // Ensure it's hidden
 }
