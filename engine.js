@@ -72,6 +72,8 @@ document.getElementById('calc-body').addEventListener('touchstart', (e) => {
         // FORCE PHASE (Toxic or ACAAN)
         if (seqIdx < forceSequence.length) {
             currentInput += forceSequence[seqIdx++];
+if (tappingType === 'toxic') { isTappingMode = false; document.getElementById('tap-cue').style.display = 'none'; }
+            
             
             // --- THE KEY FIX FOR TOXIC MODE ---
             // As soon as the last digit is tapped, we KILL isTappingMode
