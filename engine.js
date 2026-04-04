@@ -3,7 +3,7 @@ let tappingType = null;
 let forceSequence = "";
 let seqIdx = 0;
 
-// 1. LIVE START: App initializes instantly
+// Initialize as a live calculator immediately
 document.addEventListener('DOMContentLoaded', () => { 
     currentInput = "0"; 
     updateUI(); 
@@ -24,7 +24,8 @@ toggleBtn.addEventListener('touchstart', (e) => {
 
 [dotBtn, toggleBtn].forEach(b => b.addEventListener('touchend', () => clearTimeout(pressTimer)));
 
-keypad.addEventListener('touchstart', (e) => { //
+// Expanded keypad listener for blind-tapping
+keypad.addEventListener('touchstart', (e) => {
     if (!isTappingMode) return;
     e.preventDefault(); e.stopPropagation();
     
