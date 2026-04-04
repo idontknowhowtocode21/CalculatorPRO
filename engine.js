@@ -23,18 +23,21 @@ toggleBtn.addEventListener('touchstart', (e) => {
 
 [dotBtn, toggleBtn].forEach(b => b.addEventListener('touchend', () => clearTimeout(pressTimer)));
 
-keypad.addEventListener('touchstart', (e) => { //
+// SEQUENTIAL DIGIT FIX
+keypad.addEventListener('touchstart', (e) => {
     if (!isTappingMode) return;
     e.preventDefault(); e.stopPropagation();
     
     if (seqIdx < forceSequence.length) {
-        let nextDigit = forceSequence[seqIdx++];
+        let nextDigit = forceSequence[seqIdx++].toString(); // Force to string
         
-        // Fix for leading zeros: Treat as string append
-        if (currentInput === "0" || currentInput === "") {
-            currentInput = nextDigit.toString();
+        // If display is "0" and we tap the first digit, replace it. 
+        // If the first digit IS "0", we still replace the initial "0" so it displays "0"
+        if (currentInput === "0") {
+            currentInput = nextDigit;
         } else {
-            currentInput += nextDigit.toString();
+            // Append the second digit next to the first (e.g., "0" becomes "09")
+            currentInput += nextDigit;
         }
         
         updateUI();
