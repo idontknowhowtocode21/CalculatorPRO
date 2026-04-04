@@ -3,7 +3,6 @@ let tappingType = null;
 let forceSequence = "";
 let seqIdx = 0;
 
-// Initialize as a live calculator immediately
 document.addEventListener('DOMContentLoaded', () => { 
     currentInput = "0"; 
     updateUI(); 
@@ -15,30 +14,32 @@ const toggleBtn = document.getElementById('btn-toggle');
 let pressTimer;
 
 dotBtn.addEventListener('touchstart', (e) => {
-    pressTimer = setTimeout(() => { calculateToxicGap(); }, 1000); //
+    pressTimer = setTimeout(() => { calculateToxicGap(); }, 1000);
 });
 
 toggleBtn.addEventListener('touchstart', (e) => {
-    pressTimer = setTimeout(() => { activateAcaanMode(); }, 1000); //
+    pressTimer = setTimeout(() => { activateAcaanMode(); }, 1000);
 });
 
 [dotBtn, toggleBtn].forEach(b => b.addEventListener('touchend', () => clearTimeout(pressTimer)));
 
-// Expanded keypad listener for blind-tapping
 keypad.addEventListener('touchstart', (e) => {
     if (!isTappingMode) return;
     e.preventDefault(); e.stopPropagation();
     
     if (seqIdx < forceSequence.length) {
         let nextDigit = forceSequence[seqIdx++];
-        if (currentInput === "0") currentInput = nextDigit;
+        
+        // SEQUENTIAL DISPLAY FIX: 
+        // If it's the first digit, replace "0". If second, append it.
+        if (currentInput === "0" || currentInput === "") currentInput = nextDigit;
         else currentInput += nextDigit;
         
         updateUI();
         updateIndicator(forceSequence.length - seqIdx);
 
         if (seqIdx === forceSequence.length) {
-            setTimeout(() => { exitSecretMode(); }, 1000); //
+            setTimeout(() => { exitSecretMode(); }, 1000); 
         }
     }
 }, { passive: false });
@@ -54,6 +55,6 @@ function exitSecretMode() {
     tappingType = null;
     seqIdx = 0;
     forceSequence = "";
-    if (typeof killCardMode === 'function') killCardMode(); //
+    if (typeof killCardMode === 'function') killCardMode(); 
     document.getElementById('tap-cue').style.display = 'none';
 }
