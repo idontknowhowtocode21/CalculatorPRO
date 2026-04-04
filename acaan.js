@@ -12,17 +12,25 @@ function captureCardData(btn) {
     const suits = {'÷':'S','×':'C','-':'H','+':'D'};
 
     if (vals[btn]) { cardVal = vals[btn]; return true; } //
+    
     if (suits[btn] && cardVal) {
         let idx = STACK.indexOf(cardVal + suits[btn]); //
         if (idx !== -1) { 
-            foundPos = (idx + 1).toString().padStart(2, '0'); //
+            // TWO-DIGIT DISPLAY: Always pad with zero
+            foundPos = (idx + 1).toString().padStart(2, '0'); 
             updateIndicator(foundPos); 
         }
-        cardVal = ""; acaanActive = false; return true; //
+        cardVal = ""; 
+        return true; //
     }
+
+    // LOCK MECHANISM: Pressing = locks the position but allows normal use
+    if (btn === '=' && foundPos !== "") {
+        acaanActive = false; // "Locks" entry mode
+        return false; // Let handleButton run the actual calculation
+    }
+
     return false;
 }
 
-function killCardMode() { //
-    acaanActive = false; cardVal = ""; foundPos = ""; 
-}
+function killCardMode() { acaanActive = false; cardVal = ""; foundPos = ""; }
