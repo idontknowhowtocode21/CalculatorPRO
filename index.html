@@ -12,6 +12,7 @@
             --bg-black: #000000; --btn-gray: #1c1c1e; --text-white: #ffffff;
             --text-dim: #8e8e93; --accent-orange: #f39c12;
         }
+        /* Disable highlighting and system popups */
         * { 
             box-sizing: border-box; 
             -webkit-tap-highlight-color: transparent; 
@@ -100,7 +101,7 @@
     function appendChar(char) {
         const ops = ['+', '-', '×', '÷'];
         const last = currentInput.slice(-1);
-        if (ops.includes(last) && ops.includes(char)) { //
+        if (ops.includes(last) && ops.includes(char)) { // Operator Overwrite
             currentInput = currentInput.slice(0, -1) + char;
             return;
         }
@@ -112,7 +113,8 @@
         try {
             let expr = currentInput.replace(/×/g, '*').replace(/÷/g, '/');
             currentInput = eval(expr).toString();
-            if (typeof foundPos !== 'undefined' && foundPos === "") { //
+            // Only exit if card mode is not active
+            if (typeof foundPos !== 'undefined' && foundPos === "") {
                 exitSecretMode(); 
             }
         } catch (e) { currentInput = "0"; }
