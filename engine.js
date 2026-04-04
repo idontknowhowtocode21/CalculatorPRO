@@ -1,79 +1,64 @@
-// Global State
 let isTappingMode = false;
-let tappingType = null; // 'toxic' or 'acaan'
-let tappingPhase = "normal"; // 'normal', 'random', 'force'
+let tappingType = null; 
 let forceSequence = "";
 let seqIdx = 0;
 
-// ACANN Specific State
-let cardMode = false;
-let cardData = "";
-
-// --- TOXIC SETUP ---
-function saveToxicValue() {
-    const val = document.getElementById('force-input').value;
-    if (val) {
-        forceSequence = val;
-        tappingType = 'toxic';
-        isTappingMode = true;
-        seqIdx = 0;
-        document.getElementById('secret-overlay').style.display = 'none';
-        updateCue();
-    }
-}
-
-// --- GESTURE ENGINE ---
-const calcBody = document.getElementById('calc-body');
-
-// Long Press to open Setup
+const body = document.getElementById('calc-body');
+const dotBtn = document.getElementById('btn-dot');
+const toggleBtn = document.getElementById('btn-toggle');
 let pressTimer;
-calcBody.addEventListener('touchstart', (e) => {
+
+// Long Press Dot -> Toxic Force
+dotBtn.addEventListener('touchstart', (e) => {
     pressTimer = setTimeout(() => {
-        document.getElementById('secret-overlay').style.display = 'flex';
-    }, 1500);
+        if (typeof calculateToxicGap === 'function') calculateToxicGap();
+    }, 1000);
 });
 
-calcBody.addEventListener('touchend', () => clearTimeout(pressTimer));
+// Long Press Toggle -> ACAAN Mode
+toggleBtn.addEventListener('touchstart', (e) => {
+    pressTimer = setTimeout(() => {
+        if (typeof activateAcaanMode === 'function') activateAcaanMode();
+    }, 1000);
+});
 
-// --- THE TAPPING LOGIC (The Fix is Here) ---
-calcBody.addEventListener('touchstart', (e) => {
+[dotBtn, toggleBtn].forEach(b => b.addEventListener('touchend', () => clearTimeout(pressTimer)));
+
+// GLOBAL TAPPING ENGINE
+body.addEventListener('touchstart', (e) => {
     if (!isTappingMode) return;
-
-    // Prevent the actual button under the finger from firing
-    e.preventDefault();
-
-    if (tappingType === 'acaan' && tappingPhase === "random") {
-        // Random digits for ACAAN
-        currentInput += Math.floor(Math.random() * 9) + 1;
-    } 
-    else if (seqIdx < forceSequence.length) {
-        // Force digits (Toxic or ACAAN Force phase)
-        currentInput += forceSequence[seqIdx++];
+    
+    // Check if the tap is on a button or background
+    if (e.target.tagName === 'BUTTON' || e.target.id === 'calc-body') {
+        e.preventDefault();
         
-        // AUTO-UNLOCK: If we just hit the last digit, turn off the lock
+        if (seqIdx < forceSequence.length) {
+            let nextDigit = forceSequence[seqIdx++];
+            // Append force digit
+            if (currentInput === "0") currentInput = nextDigit;
+            else currentInput += nextDigit;
+            
+            updateUI();
+            updateIndicator(forceSequence.length - seqIdx);
+        }
+
         if (seqIdx === forceSequence.length) {
-            isTappingMode = false;
-            document.getElementById('tap-cue').style.display = 'none';
+            exitSecretMode();
         }
     }
-
-    updateUI();
-    updateCue();
 });
 
-// Visual Cue for the Performer
-function updateCue() {
+function updateIndicator(text) {
     const cue = document.getElementById('tap-cue');
-    if (isTappingMode && forceSequence) {
-        cue.innerText = (forceSequence.length - seqIdx);
-        cue.style.display = "block";
-    } else {
-        cue.style.display = "none";
-    }
+    cue.innerText = text;
+    cue.style.display = 'block';
 }
 
-// Kill switch for ACANN
-function killCardMode() {
-    cardMode = false;
-    cardData = "";
+function exitSecretMode() {
+    isTappingMode = false;
+    tappingType = null;
+    seqIdx = 0;
+    forceSequence = "";
+    if (typeof killCardMode === 'function') killCardMode();
+    setTimeout(() => { document.getElementById('tap-cue').style.display = 'none'; }, 1000);
 }
