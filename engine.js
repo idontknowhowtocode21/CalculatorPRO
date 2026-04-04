@@ -4,7 +4,7 @@ let forceSequence = "";
 let seqIdx = 0;
 
 document.addEventListener('DOMContentLoaded', () => { 
-    updateUI(); // App is live on load
+    updateUI(); 
 });
 
 const keypad = document.getElementById('keypad'); 
@@ -22,7 +22,7 @@ toggleBtn.addEventListener('touchstart', (e) => {
 
 [dotBtn, toggleBtn].forEach(b => b.addEventListener('touchend', () => clearTimeout(pressTimer)));
 
-// THE LITERAL STRING TAPPING ENGINE
+// UPDATED TAPPING ENGINE: APPENDS TO SCREEN
 keypad.addEventListener('touchstart', (e) => {
     if (!isTappingMode) return;
     e.preventDefault(); e.stopPropagation();
@@ -30,19 +30,17 @@ keypad.addEventListener('touchstart', (e) => {
     if (seqIdx < forceSequence.length) {
         let nextChar = forceSequence[seqIdx++].toString();
         
-        // On first tap, replace the calculator's default "0"
-        if (seqIdx === 1) {
-            currentInput = nextChar;
-        } else {
-            // Append second digit next to the first (e.g. "0" becomes "09")
-            currentInput = currentInput.toString() + nextChar;
-        }
+        // FIX: Instead of replacing, we append the force digit to the existing math string
+        // This keeps "15 + 15 +" on screen and just adds the next digit
+        currentInput = currentInput.toString() + nextChar;
         
         updateUI();
         updateIndicator(forceSequence.length - seqIdx);
 
         if (seqIdx === forceSequence.length) {
-            setTimeout(() => { exitSecretMode(); }, 1000); 
+            // Once finished, we stop the "Tapping Mode" so the Equals button works normally
+            isTappingMode = false;
+            // Note: We don't call exitSecretMode yet so ACAAN data stays locked if needed
         }
     }
 }, { passive: false });
