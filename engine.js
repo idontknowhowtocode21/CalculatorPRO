@@ -62,26 +62,7 @@ setupLong('btn-equals', () => {
 
 
 // engine.js - Inside the Global Touch Listener
-document.getElementById('calc-body').addEventListener('touchstart', (e) => {
-    if (!isTappingMode) return; // If not in a mode, do nothing
-    e.preventDefault();
-
-    if (tappingType === 'acaan' && tappingPhase === "random") {
-        currentInput += Math.floor(Math.random() * 9) + 1;
-    } else {
-        // FORCE PHASE (Toxic or ACAAN)
-        if (seqIdx < forceSequence.length) {
-            currentInput += forceSequence[seqIdx++];
-if (tappingType === 'toxic') { isTappingMode = false; document.getElementById('tap-cue').style.display = 'none'; }
-            
-            
-            // --- THE KEY FIX FOR TOXIC MODE ---
-            // As soon as the last digit is tapped, we KILL isTappingMode
-            // This allows the very next touch (the '=' button) to be seen as a normal button
-            if (tappingType === 'toxic' && seqIdx === forceSequence.length) {
-                isTappingMode = false; 
-                document.getElementById('tap-cue').style.display = "none";
-            }
+if (tappingType === 'acaan' && tappingPhase === "random") { currentInput += Math.floor(Math.random() * 9) + 1; } else { if (seqIdx < forceSequence.length) { currentInput += forceSequence[seqIdx++]; if (tappingType === 'toxic' && seqIdx === forceSequence.length) { isTappingMode = false; document.getElementById('tap-cue').style.display = 'none'; } } }
         }
     }
     updateUI();
