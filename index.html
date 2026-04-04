@@ -6,30 +6,69 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Calculator</title>
     <style>
-        :root { --bg-black: #000000; --btn-gray: #1c1c1e; --text-white: #ffffff; --text-dim: #8e8e93; --accent-orange: #f39c12; }
+        :root {
+            --bg-black: #000000;
+            --btn-gray: #1c1c1e;
+            --text-white: #ffffff;
+            --text-dim: #8e8e93;
+            --accent-orange: #f39c12;
+        }
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-        body, html { height: 100%; width: 100%; background-color: var(--bg-black); font-family: sans-serif; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        #secret-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; color: white; }
-        #secret-overlay input { width: 80%; padding: 15px; border-radius: 10px; background: #222; color: white; font-size: 2rem; text-align: center; margin-bottom: 20px; outline: none; border: 1px solid #444; }
+
+        body, html {
+            height: 100%; width: 100%; background-color: var(--bg-black);
+            font-family: 'sans-serif-light', 'Roboto-Light', sans-serif;
+            display: flex; flex-direction: column; overflow: hidden; position: relative;
+        }
+
+        /* Setup Overlay */
+        #secret-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 1000; flex-direction: column;
+            align-items: center; justify-content: center; color: white;
+        }
+
+        #secret-overlay input {
+            width: 80%; padding: 15px; border-radius: 10px; border: 1px solid #444;
+            background: #222; color: white; font-size: 2rem; text-align: center; margin-bottom: 20px; outline: none;
+        }
+
         .top-nav { display: flex; justify-content: space-between; padding: 20px; padding-top: 25px; }
         .icon-svg { width: 22px; height: 22px; fill: var(--text-dim); }
+
         #display-container { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; padding: 20px 30px; overflow: hidden; width: 100%; }
-        #result { font-size: 5rem; color: var(--text-white); font-weight: 200; text-align: right; white-space: nowrap; overflow-x: auto; width: 100%; scrollbar-width: none; }
-        #keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 15px; padding-bottom: 30px; }
-        button { aspect-ratio: 1/1; border-radius: 50%; border: none; background-color: var(--btn-gray); color: var(--text-white); font-size: 1.8rem; position: relative; outline: none; }
+        
+        #result { 
+            font-size: 5rem; color: var(--text-white); font-weight: 200; text-align: right; 
+            line-height: 1.2; white-space: nowrap; overflow-x: auto; overflow-y: hidden; 
+            width: 100%; scrollbar-width: none; 
+        }
+        #result::-webkit-scrollbar { display: none; }
+
+        #keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 15px; padding-bottom: 30px; background-color: var(--bg-black); }
+        
+        button { 
+            aspect-ratio: 1 / 1; border-radius: 50%; border: none; 
+            background-color: var(--btn-gray); color: var(--text-white); 
+            font-size: 1.8rem; font-weight: 300; display: flex; 
+            align-items: center; justify-content: center; outline: none; position: relative; 
+        }
         button:active { background-color: #3a3a3c; }
+        
         .op-text { color: var(--accent-orange); font-size: 2.2rem; }
         .util-text { color: var(--text-dim); }
-        .equals-btn { background-color: var(--accent-orange); }
-        #tap-cue { position: absolute; bottom: 12px; left: 12px; color: #2c2c2e; font-size: 0.75rem; display: none; }
+        .equals-btn { background-color: var(--accent-orange); color: white; }
+        
+        #tap-cue { position: absolute; bottom: 12px; left: 12px; color: #2c2c2e; font-size: 0.75rem; pointer-events: none; display: none; }
     </style>
 </head>
 <body id="calc-body">
 
 <div id="secret-overlay">
-    <p>Set Toxic Force</p>
+    <p style="margin-bottom: 10px; color: var(--text-dim);">Set Toxic Force</p>
     <input type="number" id="force-input" placeholder="0">
-    <button onclick="saveToxicValue()" style="width:120px; height:50px; aspect-ratio:auto; border-radius:10; background:var(--accent-orange)">SAVE</button>
+    <button onclick="saveToxicValue()" style="width: 150px; height: 50px; border-radius: 10px; background: var(--accent-orange); color: white; font-size: 1rem;">SAVE</button>
 </div>
 
 <div class="top-nav">
@@ -37,20 +76,35 @@
     <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-8 4h2v2h-2V7zm0 4h2v2h-2v-2zm-4-4h2v2H7V7zm0 4h2v2H7v-2zm0 4h2v2H7v-2zm10 2h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>
 </div>
 
-<div id="display-container"><div id="result">0</div></div>
+<div id="display-container">
+    <div id="result">0</div>
+</div>
 
 <div id="keypad">
     <button class="util-text" id="btn-c" onclick="handleButton('C')">C</button>
     <button class="util-text" onclick="handleButton('%')">%</button>
     <button onclick="handleButton('back')">⌫</button>
     <button class="op-text" id="btn-div" onclick="handleButton('÷')">÷</button>
-    <button onclick="handleButton('7')">7</button><button onclick="handleButton('8')">8</button><button onclick="handleButton('9')">9</button>
+
+    <button onclick="handleButton('7')">7</button>
+    <button onclick="handleButton('8')">8</button>
+    <button onclick="handleButton('9')">9</button>
     <button class="op-text" id="btn-mul" onclick="handleButton('×')">×</button>
-    <button onclick="handleButton('4')">4</button><button onclick="handleButton('5')">5</button><button onclick="handleButton('6')">6</button>
+
+    <button onclick="handleButton('4')">4</button>
+    <button onclick="handleButton('5')">5</button>
+    <button onclick="handleButton('6')">6</button>
     <button class="op-text" id="btn-sub" onclick="handleButton('-')">-</button>
-    <button onclick="handleButton('1')">1</button><button onclick="handleButton('2')">2</button><button onclick="handleButton('3')">3</button>
+
+    <button onclick="handleButton('1')">1</button>
+    <button onclick="handleButton('2')">2</button>
+    <button onclick="handleButton('3')">3</button>
     <button class="op-text" id="btn-add" onclick="handleButton('+')">+</button>
-    <button id="btn-toggle" onclick="handleButton('toggle')">+/-<span id="tap-cue"></span></button>
+
+    <button id="btn-toggle" onclick="handleButton('toggle')">
+        +/-
+        <span id="tap-cue"></span>
+    </button>
     <button onclick="handleButton('0')">0</button>
     <button id="btn-dot" onclick="handleButton('.')">.</button>
     <button class="equals-btn" id="btn-equals" onclick="handleButton('=')">=</button>
@@ -60,82 +114,59 @@
 <script src="toxic.js"></script>
 <script src="engine.js"></script>
 
-    <script>
-    // --- 1. THE ROUTER ---
-    // This function decides if a button press is for Math, Cards, or Toxic
+<script>
+    // --- THE ROUTER ---
     function handleButton(btn) {
-        // Priority: If we are in the middle of ACAAN, 'C' acts as the Stage Manager
+        // Priority 1: Card Mode "C" Stage Management
         if (isTappingMode && tappingType === 'acaan' && btn === 'C') {
-            runAcaanStageManager(); // Located in acaan.js
+            runAcaanStageManager();
             return;
         }
 
-        // Priority: If Tapping Mode is active (Toxic), block all other buttons
+        // Priority 2: Block keypad while Toxic Force is in "Blind Tap" mode
         if (isTappingMode) return;
 
-        // Priority: If Card Mode is ON, capture the Card/Suit entry silently
+        // Priority 3: Silent Card Entry (Value then Suit)
         if (cardMode && !['toggle', '='].includes(btn)) {
-            captureCardData(btn); // Located in acaan.js
+            captureCardData(btn);
             return;
         }
 
         // Standard Calculator Routing
         switch(btn) {
-            case 'C': 
-                clearAll(); 
-                break;
-            case '%': 
-                handlePercentLogic(); // Located in toxic.js
-                break;
-            case 'back': 
-                currentInput = currentInput.slice(0, -1); 
-                break;
-            case '=': 
-                runCalculation(); 
-                break;
-            case 'toggle': 
-                toggleSign(); 
-                break;
-            case '.': 
-                appendChar('.'); 
-                break;
-            default: 
-                appendChar(btn);
+            case 'C': clearAll(); break;
+            case '%': handlePercentLogic(); break;
+            case 'back': currentInput = currentInput.slice(0, -1); break;
+            case '=': runCalculation(); break;
+            case 'toggle': toggleSign(); break;
+            case '.': appendChar('.'); break;
+            default: appendChar(btn);
         }
         updateUI();
     }
 
-    // --- 2. CORE MATH FUNCTIONS ---
     function appendChar(char) {
         const ops = ['+', '-', '×', '÷', '%'];
         const last = currentInput.slice(-1);
-        
         if (currentInput === "" && ['×', '÷', '%'].includes(char)) return;
-        
         if (ops.includes(last) && ops.includes(char)) {
             currentInput = currentInput.slice(0, -1) + char;
         } else {
-            if (currentInput === "0" && !ops.includes(char)) {
-                currentInput = char;
-            } else {
-                currentInput += char;
-            }
+            currentInput = (currentInput === "0" && !ops.includes(char)) ? char : currentInput + char;
         }
     }
 
     function runCalculation() {
         if (!currentInput) return;
         try {
-            // Replace visual operators with JS math operators
-            let mathExpression = currentInput.replace(/×/g, '*').replace(/÷/g, '/');
-            currentInput = eval(mathExpression).toString();
+            let math = currentInput.replace(/×/g, '*').replace(/÷/g, '/');
+            currentInput = eval(math).toString();
             
-            // CLEAN UP: Ensure all secret modes turn off after the result is shown
+            // CLEAN UP: Once equals is hit, we ensure all trick states are reset
             isTappingMode = false;
             tappingType = null;
             tappingPhase = "normal";
-            
-            if (cardMode) killCardMode(); // Located in acaan.js
+            if (cardMode) killCardMode(); 
             
             document.getElementById('tap-cue').style.display = "none";
         } catch (e) {
@@ -157,194 +188,18 @@
         currentInput = currentInput.startsWith('-') ? currentInput.slice(1) : '-' + currentInput;
     }
 
-    // --- 3. UI RENDERING ---
     function updateUI() {
         const resultEl = document.getElementById('result');
         resultEl.innerText = currentInput || "0";
         
-        // Dynamic Font Scaling (Xiaomi Style)
         let len = resultEl.innerText.length;
         if (len > 15) resultEl.style.fontSize = "2.2rem";
         else if (len > 11) resultEl.style.fontSize = "3rem";
         else if (len > 7) resultEl.style.fontSize = "4rem";
         else resultEl.style.fontSize = "5rem";
 
-        // Auto-scroll to the right so the cursor/last digit is always visible
-        setTimeout(() => {
-            resultEl.scrollLeft = resultEl.scrollWidth;
-        }, 0);
+        setTimeout(() => { resultEl.scrollLeft = resultEl.scrollWidth; }, 0);
     }
 </script>
-
-
-<script>
-    let currentInput = "";
-    const resultEl = document.getElementById('result');
-
-    function handleButton(btn) {
-        // 1. Check if ACAAN Stage Manager needs to intervene
-        if (isTappingMode && tappingType === 'acaan' && btn === 'C') {
-            runAcaanStageManager();
-            return;
-        }
-
-        // 2. Block keypad if Toxic Tapping is active
-        if (isTappingMode) return;
-
-        // 3. Silent Card Input
-        if (cardMode && !['toggle', '='].includes(btn)) {
-            captureCardData(btn);
-            return;
-        }
-
-        // 4. Standard Routing
-        switch(btn) {
-            case 'C': currentInput = ""; break;
-            case '%': handlePercentLogic(); break;
-            case 'back': currentInput = currentInput.slice(0,-1); break;
-            case '=': runCalculation(); break;
-            case 'toggle': currentInput = currentInput.startsWith('-') ? currentInput.slice(1) : '-' + currentInput; break;
-            default: appendChar(btn);
-        }
-        updateUI();
-    }
-
-    function appendChar(char) {
-        const ops = ['+', '-', '×', '÷', '%'];
-        const last = currentInput.slice(-1);
-        if (currentInput === "" && ['×', '÷', '%'].includes(char)) return;
-        if (ops.includes(last) && ops.includes(char)) currentInput = currentInput.slice(0, -1) + char;
-        else currentInput = (currentInput === "0" && !ops.includes(char)) ? char : currentInput + char;
-    }
-
-    function runCalculation() {
-        try {
-            let math = currentInput.replace(/×/g,'*').replace(/÷/g,'/');
-            currentInput = eval(math).toString();
-            if (cardMode) killCardMode(); 
-        } catch(e) { currentInput = "Error"; }
-    }
-
-    function updateUI() {
-        resultEl.innerText = currentInput || "0";
-        let l = resultEl.innerText.length;
-        resultEl.style.fontSize = l > 15 ? "2.2rem" : l > 11 ? "3rem" : l > 7 ? "4rem" : "5rem";
-        setTimeout(() => resultEl.scrollLeft = resultEl.scrollWidth, 0);
-    }
-</script>
-
-    <script>
-    // --- 1. THE ROUTER (Decides which mode handles the button) ---
-    function handleButton(btn) {
-        // PRIORITY A: If in ACAAN mode, 'C' is the stage manager
-        if (isTappingMode && tappingType === 'acaan' && btn === 'C') {
-            runAcaanStageManager(); // This function is inside acaan.js
-            return;
-        }
-
-        // PRIORITY B: If we are in the middle of Tapping (Toxic), block other buttons
-        if (isTappingMode) return;
-
-        // PRIORITY C: If Card Mode is active, intercept digits/operators for the card
-        if (cardMode && !['toggle', '='].includes(btn)) {
-            captureCardData(btn); // This function is inside acaan.js
-            return;
-        }
-
-        // PRIORITY D: Normal Calculator Behavior
-        switch(btn) {
-            case 'C': 
-                clearAll(); 
-                break;
-            case '%': 
-                handlePercentLogic(); // Inside toxic.js
-                break;
-            case 'back': 
-                currentInput = currentInput.slice(0, -1); 
-                break;
-            case '=': 
-                runCalculation(); 
-                break;
-            case 'toggle': 
-                toggleSign(); 
-                break;
-            case '.': 
-                appendChar('.'); 
-                break;
-            default: 
-                appendChar(btn);
-        }
-        updateUI();
-    }
-
-    // --- 2. CORE CALCULATOR FUNCTIONS ---
-    function appendChar(char) {
-        const ops = ['+', '-', '×', '÷', '%'];
-        const last = currentInput.slice(-1);
-        
-        if (currentInput === "" && ['×', '÷', '%'].includes(char)) return;
-        
-        if (ops.includes(last) && ops.includes(char)) {
-            currentInput = currentInput.slice(0, -1) + char;
-        } else {
-            if (currentInput === "0" && !ops.includes(char)) {
-                currentInput = char;
-            } else {
-                currentInput += char;
-            }
-        }
-    }
-
-    function runCalculation() {
-        try {
-            let math = currentInput.replace(/×/g, '*').replace(/÷/g, '/');
-            currentInput = eval(math).toString();
-            
-            // Safety: If they hit equals, ensure all secret modes turn off
-            if (tappingType === 'toxic') {
-                isTappingMode = false;
-                tappingType = null;
-                document.getElementById('tap-cue').style.display = "none";
-            }
-            if (cardMode) killCardMode(); // Inside acaan.js
-            
-        } catch (e) {
-            currentInput = "Error";
-        }
-        updateUI();
-    }
-
-    function toggleSign() {
-        if (!currentInput) return;
-        currentInput = currentInput.startsWith('-') ? currentInput.slice(1) : '-' + currentInput;
-    }
-
-    function clearAll() {
-        currentInput = "";
-        // If they hit C, we reset the tapping engine just in case
-        isTappingMode = false;
-        tappingType = null;
-        document.getElementById('tap-cue').style.display = "none";
-        updateUI();
-    }
-
-    function updateUI() {
-        const resultEl = document.getElementById('result');
-        resultEl.innerText = currentInput || "0";
-        
-        // Font Scaling Logic
-        let len = resultEl.innerText.length;
-        if (len > 15) resultEl.style.fontSize = "2.2rem";
-        else if (len > 11) resultEl.style.fontSize = "3rem";
-        else if (len > 7) resultEl.style.fontSize = "4rem";
-        else resultEl.style.fontSize = "5rem";
-
-        // Auto-scroll to the right for long equations
-        setTimeout(() => {
-            resultEl.scrollLeft = resultEl.scrollWidth;
-        }, 0);
-    }
-</script>
-
 </body>
 </html>
