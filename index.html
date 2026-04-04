@@ -12,7 +12,6 @@
             --bg-black: #000000; --btn-gray: #1c1c1e; --text-white: #ffffff;
             --text-dim: #8e8e93; --accent-orange: #f39c12;
         }
-        /* Disable highlighting and system callouts */
         * { 
             box-sizing: border-box; 
             -webkit-tap-highlight-color: transparent; 
@@ -60,8 +59,8 @@
 <div id="display-container"><div id="result">0</div></div>
 
 <div id="keypad">
-    <button class="util-text" onclick="handleButton('C')">C</button>
-    <button class="util-text" onclick="handleButton('%')">%</button>
+    <button onclick="handleButton('C')">C</button>
+    <button onclick="handleButton('%')">%</button>
     <button onclick="handleButton('back')">⌫</button>
     <button class="op-text" onclick="handleButton('÷')">÷</button>
     <button onclick="handleButton('7')">7</button><button onclick="handleButton('8')">8</button><button onclick="handleButton('9')">9</button>
@@ -82,8 +81,11 @@
     let currentInput = "0";
 
     function handleButton(btn) {
-        if (typeof captureCardData === 'function' && captureCardData(btn)) return;
+        // If we are currently in "Tapping Mode", ignore everything except the Equals button
         if (isTappingMode && btn !== '=') return;
+        
+        // Check for ACAAN setup
+        if (typeof captureCardData === 'function' && captureCardData(btn)) return;
 
         switch(btn) {
             case 'C': currentInput = "0"; break;
@@ -112,6 +114,7 @@
         try {
             let expr = currentInput.replace(/×/g, '*').replace(/÷/g, '/');
             currentInput = eval(expr).toString();
+            // Only kill secret modes if we aren't mid-trick
             if (typeof foundPos !== 'undefined' && foundPos === "") exitSecretMode();
         } catch (e) { currentInput = "0"; }
         updateUI();
@@ -124,7 +127,6 @@
 
     function updateUI() {
         const res = document.getElementById('result');
-        // STRING PRESERVATION: Treat input as raw text to keep leading zeros
         res.innerText = currentInput.toString() === "" ? "0" : currentInput.toString();
         res.scrollLeft = res.scrollWidth;
     }
