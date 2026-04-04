@@ -7,11 +7,8 @@
     <title>Calculator</title>
     <style>
         :root {
-            --bg-black: #000000;
-            --btn-gray: #1c1c1e;
-            --text-white: #ffffff;
-            --text-dim: #8e8e93;
-            --accent-orange: #f39c12;
+            --bg-black: #000000; --btn-gray: #1c1c1e; --text-white: #ffffff;
+            --text-dim: #8e8e93; --accent-orange: #f39c12;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         body, html {
@@ -72,39 +69,30 @@
     <button class="util-text" id="btn-perc" onclick="handleButton('%')">%</button>
     <button id="btn-back" onclick="handleButton('back')">⌫</button>
     <button class="op-text" id="btn-div" onclick="handleButton('÷')">÷</button>
-
     <button onclick="handleButton('7')">7</button>
     <button onclick="handleButton('8')">8</button>
     <button onclick="handleButton('9')">9</button>
     <button class="op-text" id="btn-mul" onclick="handleButton('×')">×</button>
-
     <button onclick="handleButton('4')">4</button>
     <button onclick="handleButton('5')">5</button>
     <button onclick="handleButton('6')">6</button>
     <button class="op-text" id="btn-sub" onclick="handleButton('-')">-</button>
-
     <button onclick="handleButton('1')">1</button>
     <button onclick="handleButton('2')">2</button>
     <button onclick="handleButton('3')">3</button>
     <button class="op-text" id="btn-add" onclick="handleButton('+')">+</button>
-
-    <button id="btn-toggle" onclick="handleButton('toggle')">
-        +/-
-        <span id="tap-cue"></span>
-    </button>
+    <button id="btn-toggle" onclick="handleButton('toggle')">+/-<span id="tap-cue"></span></button>
     <button onclick="handleButton('0')">0</button>
     <button id="btn-dot" onclick="handleButton('.')">.</button>
     <button class="equals-btn" id="btn-equals" onclick="handleButton('=')">=</button>
 </div>
 
-<script src="acaan.js"></script>
-<script src="toxic.js"></script>
-<script src="engine.js"></script>
+<script src="acaan.js"></script><script src="toxic.js"></script><script src="engine.js"></script>
 
 <script>
     function handleButton(btn) {
-        if (typeof captureCardData === 'function' && captureCardData(btn)) return;
-        if (isTappingMode && btn !== '=') return;
+        if (typeof captureCardData === 'function' && captureCardData(btn)) return; //
+        if (isTappingMode && btn !== '=') return; //
 
         switch(btn) {
             case 'C': clearAll(); break;
@@ -121,17 +109,12 @@
     function appendChar(char) {
         const ops = ['+', '-', '×', '÷'];
         const last = currentInput.slice(-1);
-
-        if (ops.includes(last) && ops.includes(char)) {
+        if (ops.includes(last) && ops.includes(char)) { //
             currentInput = currentInput.slice(0, -1) + char;
             return;
         }
-
-        if (currentInput === "0" && !ops.includes(char)) {
-            currentInput = char;
-        } else {
-            currentInput += char;
-        }
+        if (currentInput === "0" && !ops.includes(char)) currentInput = char;
+        else currentInput += char;
     }
 
     function runCalculation() {
@@ -143,11 +126,7 @@
         updateUI();
     }
 
-    function clearAll() {
-        currentInput = "0";
-        exitSecretMode();
-        updateUI();
-    }
+    function clearAll() { currentInput = "0"; exitSecretMode(); updateUI(); }
 
     function toggleSign() {
         if (currentInput === "0") return;
